@@ -387,6 +387,39 @@ RSpec.describe User, type: :model do
         expect(actual).to eq(expected_merchant_order)
         expect(actual_quantity_sold).to eq(expected_quantity_sold_order)
       end
+
+      it '.top_selling_merchants_previous' do
+        actual = User.top_selling_merchants_previous(10)
+                    #m11 and m12 tied for first
+        expected_merchant_order = [@m[1],
+                                   @m[2],
+                                   @m[3],
+                                   @m[4],
+                                   @m[5],
+                                   @m[6],
+                                   @m[7],
+                                   @m[8],
+                                   @m[9],
+                                   @m[10]]
+        actual_quantity_sold = []
+        actual.each do |record|
+          actual_quantity_sold << record.quantity_sold
+        end
+
+        expected_quantity_sold_order = [100, #sum multiple orders of same month
+                                        @oi_old_11.quantity,
+                                        @oi_old_10.quantity,
+                                        @oi_old_9.quantity,
+                                        @oi_old_8.quantity,
+                                        @oi_old_7.quantity,
+                                        @oi_old_6.quantity,
+                                        @oi_old_5.quantity,
+                                        @oi_old_4.quantity,
+                                        @oi_old_3.quantity]
+
+        expect(actual).to eq(expected_merchant_order)
+        expect(actual_quantity_sold).to eq(expected_quantity_sold_order)
+      end
     end
   end
 end
