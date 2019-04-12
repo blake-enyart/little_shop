@@ -155,4 +155,13 @@ class User < ApplicationRecord
         .order('order_count DESC')
         .limit(limit)
   end
+
+  def self.top_selling_merchants_current(limit)
+    self.joins(items: :orders)
+        .where("orders.status = 2 AND EXTRACT(MONTH FROM orders.updated_at) = ?", Date.today.month )
+        .select("users.*, SUM(order_items.quantity) as quantity_sold")
+        .group(:id)
+        .order('quantity_sold DESC, users.name ASC')
+        .limit(limit)
+  end
 end

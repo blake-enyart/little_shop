@@ -275,5 +275,118 @@ RSpec.describe User, type: :model do
         expect(User.top_user_cities_by_order_count(3)[2].order_count).to eq(1)
       end
     end
+
+    describe 'leaderboard stats' do
+      before :each do
+        #generates hash of specified number of merchants
+        merchant_list = create_list(:merchant, 12)
+        @m = Hash.new
+        merchant_list.each_with_index do |merchant, index|
+          @m[index+1] = merchant
+        end
+
+        #merchants all have enough inventory to complete all orders
+        i1 = create(:item, merchant_id: @m[1].id, inventory: 1000)
+        i2 = create(:item, merchant_id: @m[2].id, inventory: 1000)
+        i3 = create(:item, merchant_id: @m[3].id, inventory: 1000)
+        i4 = create(:item, merchant_id: @m[4].id, inventory: 1000)
+        i5 = create(:item, merchant_id: @m[5].id, inventory: 1000)
+        i6 = create(:item, merchant_id: @m[6].id, inventory: 1000)
+        i7 = create(:item, merchant_id: @m[7].id, inventory: 1000)
+        i8 = create(:item, merchant_id: @m[8].id, inventory: 1000)
+        i9 = create(:item, merchant_id: @m[9].id, inventory: 1000)
+        i10 = create(:item, merchant_id: @m[10].id, inventory: 1000)
+        i11 = create(:item, merchant_id: @m[11].id, inventory: 1000)
+        i12 = create(:item, merchant_id: @m[12].id, inventory: 1000)
+
+        #items are not considered sold until their order is shipped
+        #generates hash of specified number of new shipped orders
+        new_order_list = create_list(:shipped_order, 13)
+        @s_order_new = Hash.new
+        new_order_list.each_with_index do |order, index|
+          @s_order_new[index+1] = order
+        end
+
+        #generates hash of specified number of shipped orders one month old
+        old_order_list = create_list(:shipped_order, 13, updated_at: 1.months.ago)
+        @s_order_old = Hash.new
+        old_order_list.each_with_index do |order, index|
+          @s_order_old[index+1] = order
+        end
+
+        #order_item is fulfilled and order is shipped and each item belongs to respective
+        #merchant of associated number
+        #merchants 11,12 sold the most and merchants 1,2 sold the least for recent month
+        #tie for least quantity sold and different merchants
+        @oi_new_1 = create(:fulfilled_order_item, item: i1, order: @s_order_new[1], quantity: 1)
+        @oi_new_2 = create(:fulfilled_order_item, item: i2, order: @s_order_new[2], quantity: 1)
+
+        @oi_new_3 = create(:fulfilled_order_item, item: i3, order: @s_order_new[3])
+        @oi_new_4 = create(:fulfilled_order_item, item: i4, order: @s_order_new[4])
+        @oi_new_5 = create(:fulfilled_order_item, item: i5, order: @s_order_new[5])
+        @oi_new_6 = create(:fulfilled_order_item, item: i6, order: @s_order_new[6])
+        @oi_new_7 = create(:fulfilled_order_item, item: i7, order: @s_order_new[7])
+        @oi_new_8 = create(:fulfilled_order_item, item: i8, order: @s_order_new[8])
+        @oi_new_9 = create(:fulfilled_order_item, item: i9, order: @s_order_new[9])
+        @oi_new_10 = create(:fulfilled_order_item, item: i10, order: @s_order_new[10])
+        #tie for most quantity sold and different merchants
+        @oi_new_11 = create(:fulfilled_order_item, item: i11, order: @s_order_new[11], quantity: 100)
+        #tie for most with two orders by same merchant
+        @oi_new_12 = create(:fulfilled_order_item, item: i12, order: @s_order_new[12], quantity: 50)
+        @oi_new_13 = create(:fulfilled_order_item, item: i12, order: @s_order_new[13], quantity: 50)
+
+        #merchant 1,2 sold the most and merchant 11,12 sold the least for last month
+        #tie for least quantity sold and different merchants
+        @oi_old_1 = create(:fulfilled_order_item, item: i12, order: @s_order_old[1], quantity: 1)
+        @oi_old_2 = create(:fulfilled_order_item, item: i11, order: @s_order_old[2], quantity: 1)
+
+        @oi_old_3 = create(:fulfilled_order_item, item: i10, order: @s_order_old[3])
+        @oi_old_4 = create(:fulfilled_order_item, item: i9, order: @s_order_old[4])
+        @oi_old_5 = create(:fulfilled_order_item, item: i8, order: @s_order_old[5])
+        @oi_old_6 = create(:fulfilled_order_item, item: i7, order: @s_order_old[6])
+        @oi_old_7 = create(:fulfilled_order_item, item: i6, order: @s_order_old[7])
+        @oi_old_8 = create(:fulfilled_order_item, item: i5, order: @s_order_old[8])
+        @oi_old_9 = create(:fulfilled_order_item, item: i4, order: @s_order_old[9])
+        @oi_old_10 = create(:fulfilled_order_item, item: i3, order: @s_order_old[10])
+        #tie for most quantity sold and different merchants
+        @oi_old_11 = create(:fulfilled_order_item, item: i2, order: @s_order_old[11], quantity: 100)
+        #tie for most with two orders by same merchant
+        @oi_old_12 = create(:fulfilled_order_item, item: i1, order: @s_order_old[12], quantity: 50)
+        @oi_old_13 = create(:fulfilled_order_item, item: i1, order: @s_order_old[13], quantity: 50)
+      end
+
+      it '.top_selling_merchants_current' do
+        actual = User.top_selling_merchants_current(10)
+                    #m11 and m12 tied for first
+        expected_merchant_order = [@m[11], #query sorts alphabetically
+                                   @m[12], #sum multiple orders of same month
+                                   @m[10],
+                                   @m[9],
+                                   @m[8],
+                                   @m[7],
+                                   @m[6],
+                                   @m[5],
+                                   @m[4],
+                                   @m[3]]
+        actual_quantity_sold = []
+        actual.each do |record|
+          actual_quantity_sold << record.quantity_sold
+        end
+
+        expected_quantity_sold_order = [@oi_new_11.quantity, #query sorts alphabetically
+                                        100, #sum multiple orders of same month
+                                        @oi_new_10.quantity,
+                                        @oi_new_9.quantity,
+                                        @oi_new_8.quantity,
+                                        @oi_new_7.quantity,
+                                        @oi_new_6.quantity,
+                                        @oi_new_5.quantity,
+                                        @oi_new_4.quantity,
+                                        @oi_new_3.quantity]
+
+        expect(actual).to eq(expected_merchant_order)
+        expect(actual_quantity_sold).to eq(expected_quantity_sold_order)
+      end
+    end
   end
 end
