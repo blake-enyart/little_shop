@@ -184,5 +184,105 @@ RSpec.describe "merchant index workflow", type: :feature do
         end
       end
     end
+
+    describe "shows merchant leaderboard statistics" do
+      before :each do
+        #generates hash of specified number of merchants
+        merchant_list = create_list(:merchant, 12)
+        @m = Hash.new
+        merchant_list.each_with_index do |merchant, index|
+          @m[index+1] = merchant
+        end
+
+        #merchants all have enough inventory to complete all orders
+        i1 = create(:item, merchant_id: @m[1].id, inventory: 1000)
+        i2 = create(:item, merchant_id: @m[2].id, inventory: 1000)
+        i3 = create(:item, merchant_id: @m[3].id, inventory: 1000)
+        i4 = create(:item, merchant_id: @m[4].id, inventory: 1000)
+        i5 = create(:item, merchant_id: @m[5].id, inventory: 1000)
+        i6 = create(:item, merchant_id: @m[6].id, inventory: 1000)
+        i7 = create(:item, merchant_id: @m[7].id, inventory: 1000)
+        i8 = create(:item, merchant_id: @m[8].id, inventory: 1000)
+        i9 = create(:item, merchant_id: @m[9].id, inventory: 1000)
+        i10 = create(:item, merchant_id: @m[10].id, inventory: 1000)
+        i11 = create(:item, merchant_id: @m[11].id, inventory: 1000)
+        i12 = create(:item, merchant_id: @m[12].id, inventory: 1000)
+
+        #items are not considered sold until their order is shipped
+        #generates hash of specified number of new shipped orders
+        new_order_list = create_list(:shipped_order, 13)
+        @s_order_new = Hash.new
+        new_order_list.each_with_index do |order, index|
+          @s_order_new[index+1] = order
+        end
+
+        #generates hash of specified number of shipped orders one month old
+        old_order_list = create_list(:shipped_order, 13, updated_at: 1.months.ago)
+        @s_order_old = Hash.new
+        old_order_list.each_with_index do |order, index|
+          @s_order_old[index+1] = order
+        end
+
+        #order_item is fulfilled and order is shipped and each item belongs to respective
+        #merchant of associated number
+        #merchants 11,12 sold the most and merchants 1,2 sold the least for recent month
+        #tie for least quantity sold and different merchants
+        @oi_new_1 = create(:fulfilled_order_item, item: i1, order: @s_order_new[1], quantity: 1)
+        @oi_new_2 = create(:fulfilled_order_item, item: i2, order: @s_order_new[2], quantity: 1)
+
+        @oi_new_3 = create(:fulfilled_order_item, item: i3, order: @s_order_new[3])
+        @oi_new_4 = create(:fulfilled_order_item, item: i4, order: @s_order_new[4])
+        @oi_new_5 = create(:fulfilled_order_item, item: i5, order: @s_order_new[5])
+        @oi_new_6 = create(:fulfilled_order_item, item: i6, order: @s_order_new[6])
+        @oi_new_7 = create(:fulfilled_order_item, item: i7, order: @s_order_new[7])
+        @oi_new_8 = create(:fulfilled_order_item, item: i8, order: @s_order_new[8])
+        @oi_new_9 = create(:fulfilled_order_item, item: i9, order: @s_order_new[9])
+        @oi_new_10 = create(:fulfilled_order_item, item: i10, order: @s_order_new[10])
+        #tie for most quantity sold and different merchants
+        @oi_new_11 = create(:fulfilled_order_item, item: i11, order: @s_order_new[11], quantity: 100)
+        #tie for most with two orders by same merchant
+        @oi_new_12 = create(:fulfilled_order_item, item: i12, order: @s_order_new[12], quantity: 50)
+        @oi_new_13 = create(:fulfilled_order_item, item: i12, order: @s_order_new[13], quantity: 50)
+
+        #merchant 1,2 sold the most and merchant 11,12 sold the least for last month
+        #tie for least quantity sold and different merchants
+        @oi_old_1 = create(:fulfilled_order_item, item: i12, order: @s_order_old[1], quantity: 1)
+        @oi_old_2 = create(:fulfilled_order_item, item: i11, order: @s_order_old[2], quantity: 1)
+
+        @oi_old_3 = create(:fulfilled_order_item, item: i10, order: @s_order_old[3])
+        @oi_old_4 = create(:fulfilled_order_item, item: i9, order: @s_order_old[4])
+        @oi_old_5 = create(:fulfilled_order_item, item: i8, order: @s_order_old[5])
+        @oi_old_6 = create(:fulfilled_order_item, item: i7, order: @s_order_old[6])
+        @oi_old_7 = create(:fulfilled_order_item, item: i6, order: @s_order_old[7])
+        @oi_old_8 = create(:fulfilled_order_item, item: i5, order: @s_order_old[8])
+        @oi_old_9 = create(:fulfilled_order_item, item: i4, order: @s_order_old[9])
+        @oi_old_10 = create(:fulfilled_order_item, item: i3, order: @s_order_old[10])
+        #tie for most quantity sold and different merchants
+        @oi_old_11 = create(:fulfilled_order_item, item: i2, order: @s_order_old[11], quantity: 100)
+        #tie for most with two orders by same merchant
+        @oi_old_12 = create(:fulfilled_order_item, item: i1, order: @s_order_old[12], quantity: 50)
+        @oi_old_13 = create(:fulfilled_order_item, item: i1, order: @s_order_old[13], quantity: 50)
+      end
+
+      it 'Top 10 Merchants who sold the most items this month' do
+        visit merchants_path
+
+        within("#top-ten-sellers-current-month") do
+          expect(page).to have_content("#{@m[12].name}: 100")
+          expect(page).to have_content("#{@m[11].name}: #{@oi_new_11.quantity}")
+          expect(page).to have_content("#{@m[10].name}: #{@oi_new_10.quantity}")
+          expect(page).to have_content("#{@m[9].name}: #{@oi_new_9.quantity}")
+          expect(page).to have_content("#{@m[8].name}: #{@oi_new_8.quantity}")
+          expect(page).to have_content("#{@m[7].name}: #{@oi_new_7.quantity}")
+          expect(page).to have_content("#{@m[6].name}: #{@oi_new_6.quantity}")
+          expect(page).to have_content("#{@m[5].name}: #{@oi_new_5.quantity}")
+          expect(page).to have_content("#{@m[4].name}: #{@oi_new_4.quantity}")
+          expect(page).to have_content("#{@m[3].name}: #{@oi_new_3.quantity}")
+
+          expect(page).to_not have_content("#{@m[2].name}: #{@oi_new_2.quantity}")
+          expect(page).to_not have_content("#{@m[1].name}: #{@oi_new_1.quantity}")
+        end
+      end
+    end
   end
 end
