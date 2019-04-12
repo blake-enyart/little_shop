@@ -65,7 +65,7 @@
     <% end %>
 
     <%= tag.section id: "top-ten-sellers-previous-month", class: "card-body float-left m-2" do %>
-      <h5 class="card-title">Top Selling Merchants - <%= I18n.t("date.month_names")[Date.1.months.ago] %></h5>
+      <h5 class="card-title">Top Selling Merchants - <%= I18n.t("date.month_names")[1.months.ago.month] %></h5>
       <ul>
         <% @top_ten_sellers_previous.each do |record| %>
           <li><%= record.name %>: <%= record.quantity_sold %></li>

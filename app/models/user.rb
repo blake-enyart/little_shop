@@ -164,4 +164,13 @@ class User < ApplicationRecord
         .order('quantity_sold DESC, users.name ASC')
         .limit(limit)
   end
+
+  def self.top_selling_merchants_previous(limit)
+    self.joins(items: :orders)
+        .where("orders.status = 2 AND EXTRACT(MONTH FROM orders.updated_at) = ?", 1.months.ago.month )
+        .select("users.*, SUM(order_items.quantity) as quantity_sold")
+        .group(:id)
+        .order('quantity_sold DESC, users.name ASC')
+        .limit(limit)
+  end
 end

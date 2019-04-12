@@ -288,19 +288,19 @@ RSpec.describe "merchant index workflow", type: :feature do
         visit merchants_path
 
         within("#top-ten-sellers-previous-month") do
-          expect(page).to have_content("#{@m[12].name}: 100")
-          expect(page).to have_content("#{@m[11].name}: #{@oi_new_11.quantity}")
-          expect(page).to have_content("#{@m[10].name}: #{@oi_new_10.quantity}")
-          expect(page).to have_content("#{@m[9].name}: #{@oi_new_9.quantity}")
-          expect(page).to have_content("#{@m[8].name}: #{@oi_new_8.quantity}")
-          expect(page).to have_content("#{@m[7].name}: #{@oi_new_7.quantity}")
-          expect(page).to have_content("#{@m[6].name}: #{@oi_new_6.quantity}")
-          expect(page).to have_content("#{@m[5].name}: #{@oi_new_5.quantity}")
-          expect(page).to have_content("#{@m[4].name}: #{@oi_new_4.quantity}")
-          expect(page).to have_content("#{@m[3].name}: #{@oi_new_3.quantity}")
+          expect(page).to have_content("#{@m[1].name}: 100")
+          expect(page).to have_content("#{@m[2].name}: #{@oi_old_11.quantity}")
+          expect(page).to have_content("#{@m[3].name}: #{@oi_old_10.quantity}")
+          expect(page).to have_content("#{@m[4].name}: #{@oi_old_9.quantity}")
+          expect(page).to have_content("#{@m[5].name}: #{@oi_old_8.quantity}")
+          expect(page).to have_content("#{@m[6].name}: #{@oi_old_7.quantity}")
+          expect(page).to have_content("#{@m[7].name}: #{@oi_old_6.quantity}")
+          expect(page).to have_content("#{@m[8].name}: #{@oi_old_5.quantity}")
+          expect(page).to have_content("#{@m[9].name}: #{@oi_old_4.quantity}")
+          expect(page).to have_content("#{@m[10].name}: #{@oi_old_3.quantity}")
 
-          expect(page).to_not have_content("#{@m[2].name}: #{@oi_new_2.quantity}")
-          expect(page).to_not have_content("#{@m[1].name}: #{@oi_new_1.quantity}")
+          expect(page).to_not have_content("#{@m[11].name}: #{@oi_old_2.quantity}")
+          expect(page).to_not have_content("#{@m[12].name}: #{@oi_old_1.quantity}")
         end
       end
     end

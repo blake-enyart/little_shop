@@ -12,5 +12,6 @@ class MerchantsController < ApplicationController
     @top_cities_by_order_count = User.top_user_cities_by_order_count(3)
     @top_orders_by_items_shipped = Order.sorted_by_items_shipped(3)
     @top_ten_sellers_current = User.top_selling_merchants_current(10)
+    @top_ten_sellers_previous = User.top_selling_merchants_previous(10)
   end
 end
