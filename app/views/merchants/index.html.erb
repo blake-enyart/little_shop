@@ -52,6 +52,20 @@
   <% end %>
 <% end %>
 
+<%= tag.div class: "card" do %>
+  <h2>Leaderboard</h2>
+  <%= tag.section class: "leaderboard card-body float-left m-4" do %>
+    <%= tag.section id: "top-ten-sellers-current-month", class: "card-body float-left m-2" do %>
+      <h5 class="card-title">Top Selling Merchants Current Month</h5>
+      <ul>
+        <% @top_ten_sellers_current.each do |record| %>
+          <li><%= record.name %>: <%= record.quantity_sold %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>
+
 <% @merchants.each do |merchant| %>
   <%= tag.section id: "merchant-#{merchant.id}" do %>
     <%= render partial: "merchant_card", locals: {merchant: merchant}%>
