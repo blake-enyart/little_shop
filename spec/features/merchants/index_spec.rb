@@ -378,7 +378,7 @@ RSpec.describe "merchant index workflow", type: :feature do
           #merchant 1 first with 2-10 in alphabetical order because same amount of orders fulfilled.
           @c_oi_old = Hash.new
           @c_order_old.each do |id, old_c_order|
-            @c_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements+1-(id+10)], order: @c_order_old[id])
+            @c_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements-(id+10)], order: @c_order_old[id])
             break if id == 8
           end
           @c_oi_old[9] = create(:fulfilled_order_item, item: @i[2], order: @c_order_old[9], quantity: 100)
@@ -390,7 +390,7 @@ RSpec.describe "merchant index workflow", type: :feature do
           #merchant 11 1st with 12-20 in alphabetical order because same amount of orders fulfilled in previous month
           @p_oi_old = Hash.new
           @p_order_old.each do |id, old_p_order|
-            @p_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements+1-id], order: @p_order_old[id])
+            @p_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements-id], order: @p_order_old[id])
             break if id == 8
           end
           @p_oi_old[9] = create(:fulfilled_order_item, item: @i[12], order: @p_order_old[9], quantity: 100)

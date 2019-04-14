@@ -81,6 +81,15 @@
         <% end %>
       </ul>
     <% end %>
+
+    <%= tag.section id: "top-ten-fulfilled-previous-month", class: "card-body float-left m-2" do %>
+      <h5 class="card-title">Top Fulfilling Merchants - <%= I18n.t("date.month_names")[1.months.ago.month] %></h5>
+      <ul>
+        <% @top_ten_fulfillment_previous.each do |record| %>
+          <li><%= record.name %>: <%= record.completed_orders %></li>
+        <% end %>
+      </ul>
+    <% end %>
   <% end %>
 <% end %>
 
