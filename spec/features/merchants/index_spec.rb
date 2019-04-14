@@ -414,7 +414,8 @@ RSpec.describe "merchant index workflow", type: :feature do
             expect(page).to have_content("#{@m[12].name}: 1")
             expect(page).to have_content("#{@m[11].name}: 1")
 
-            expect(page).to_not have_content(@m[21].name)
+            expect(page).to_not have_content(@m[21].name) #no orders
+            expect(page).to_not have_content(@m[10].name) #cancelled orders
           end
         end
       end
