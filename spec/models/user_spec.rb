@@ -520,14 +520,15 @@ RSpec.describe User, type: :model do
           actual = User.top_fulfilled_non_cancelled_orders_current(10)
 
           expected_merchant_order = \
-          [@m[20],@m[19],@m[18],@m[17],@m[16],@m[15],@m[14],@m[13],@m[12],@m[11]]
+          [@m[20],@m[11],@m[12],@m[13],@m[14],@m[15],@m[16],@m[17],@m[18],@m[19]]
 
           actual_completed_orders = []
           actual.each do |record|
-            actual_quantity_sold << record.completed_orders
+            actual_completed_orders << record.completed_orders
           end
 
-          expected_completed_orders = [2,1,1,1,1,1,1,1,1,1,1]
+          expected_completed_orders = [2,1,1,1,1,1,1,1,1,1]
+
           expect(actual).to eq(expected_merchant_order)
           expect(actual_completed_orders).to eq(expected_completed_orders)
         end

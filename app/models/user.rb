@@ -168,9 +168,18 @@ class User < ApplicationRecord
   def self.top_selling_merchants_previous(limit)
     self.joins(items: :orders)
         .where("orders.status = 2 AND EXTRACT(MONTH FROM orders.updated_at) = ?", 1.months.ago.month )
-        .select("users.*, SUM(order_items.quantity) as quantity_sold")
+        .select("users.*, SUM(order_items.quantity) AS quantity_sold")
         .group(:id)
         .order('quantity_sold DESC, users.name ASC')
         .limit(limit)
+  end
+
+  def self.top_fulfilled_non_cancelled_orders_current(limit)
+    self.joins(items: :orders)
+        .where("orders.status IN (1,2) AND EXTRACT(MONTH FROM orders.updated_at) = ?", Date.today.month)
+        .select("users.*, COUNT(orders.id) AS completed_orders")
+        .group(:id)
+        .order('completed_orders DESC, users.name ASC')
+        .limit(10)
   end
 end

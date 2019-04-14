@@ -404,15 +404,15 @@ RSpec.describe "merchant index workflow", type: :feature do
 
           within("#top-ten-fulfilled-current-month") do
             expect(page).to have_content("#{@m[20].name}: 2")
-            expect(page).to have_content("#{@m[19].name}: 1")
-            expect(page).to have_content("#{@m[18].name}: 1")
-            expect(page).to have_content("#{@m[17].name}: 1")
-            expect(page).to have_content("#{@m[16].name}: 1")
-            expect(page).to have_content("#{@m[15].name}: 1")
-            expect(page).to have_content("#{@m[14].name}: 1")
-            expect(page).to have_content("#{@m[13].name}: 1")
-            expect(page).to have_content("#{@m[12].name}: 1")
             expect(page).to have_content("#{@m[11].name}: 1")
+            expect(page).to have_content("#{@m[12].name}: 1")
+            expect(page).to have_content("#{@m[13].name}: 1")
+            expect(page).to have_content("#{@m[14].name}: 1")
+            expect(page).to have_content("#{@m[15].name}: 1")
+            expect(page).to have_content("#{@m[16].name}: 1")
+            expect(page).to have_content("#{@m[17].name}: 1")
+            expect(page).to have_content("#{@m[18].name}: 1")
+            expect(page).to have_content("#{@m[19].name}: 1")
 
             expect(page).to_not have_content(@m[21].name) #no orders
             expect(page).to_not have_content(@m[10].name) #cancelled orders
