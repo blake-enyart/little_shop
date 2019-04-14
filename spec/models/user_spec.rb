@@ -422,7 +422,7 @@ RSpec.describe User, type: :model do
           expect(actual_quantity_sold).to eq(expected_quantity_sold_order)
         end
       end
-      
+
       describe 'top fulfillment' do
         before(:each) do
           number_of_elements = 21
@@ -517,7 +517,7 @@ RSpec.describe User, type: :model do
         end
 
         it '.top_fulfilled_packaged_orders_current' do
-          actual = User.top_fulfilled_packaged_orders_current(10)
+          actual = User.top_fulfilled_non_cancelled_orders_current(10)
 
           expected_merchant_order = \
           [@m[20],@m[19],@m[18],@m[17],@m[16],@m[15],@m[14],@m[13],@m[12],@m[11]]
