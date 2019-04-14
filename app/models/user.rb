@@ -191,4 +191,19 @@ class User < ApplicationRecord
         .order('completed_orders DESC, users.name ASC')
         .limit(10)
   end
+
+  def self.top_fulfillment_city(limit, current_user)
+    orders = User.joins(:orders)
+                 .where(city: current_user.city)
+                 .pluck('orders.id')
+
+    self.joins(items: :orders)
+        .where.not(orders: {status: :cancelled})
+        .where(order_items: {fulfilled: true})
+        .where('orders.id': orders)
+        .select('users.*, avg(order_items.updated_at - order_items.created_at) AS fulfillment_time')
+        .group(:id)
+        .order("fulfillment_time ASC")
+        .limit(limit)
+  end
 end
