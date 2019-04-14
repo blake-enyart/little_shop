@@ -265,7 +265,7 @@ RSpec.describe "merchant index workflow", type: :feature do
           @oi_old_13 = create(:fulfilled_order_item, item: i1, order: @s_order_old[13], quantity: 50)
         end
 
-        it 'Top 10 Merchants who sold the most items this month' do
+        it 'top 10 Merchants who sold the most items this month' do
           visit merchants_path
 
           within("#top-ten-sellers-current-month") do
@@ -285,7 +285,7 @@ RSpec.describe "merchant index workflow", type: :feature do
           end
         end
 
-        it 'Top 10 Merchants who sold the most items last month' do
+        it 'top 10 Merchants who sold the most items last month' do
           visit merchants_path
 
           within("#top-ten-sellers-previous-month") do
@@ -436,6 +436,87 @@ RSpec.describe "merchant index workflow", type: :feature do
 
             expect(page).to_not have_content(@m[21].name) #no orders
             expect(page).to_not have_content(@m[10].name) #cancelled orders
+          end
+        end
+      end
+
+      describe 'top 5 in state/city' do
+        context 'as a logged-in user' do
+          before(:each) do
+            number_of_elements = 15
+            #generates hash of 'number_of_elements' of merchants
+            merchant_list = create_list(:merchant, number_of_elements)
+            @m = Hash.new
+            merchant_list.each_with_index do |merchant, index|
+              @m[index+1] = merchant
+            end
+
+            #generates hash with 'number_of_elements' items associated with corresponding merchant
+            @i = Hash.new
+            @m.each do |id, merchant|
+              @i[id] = create(:item, merchant_id: merchant.id, inventory: 1000)
+            end
+
+            @user_1 = create(:user, city: 'Denver') #user for viewing merchants page
+            user_2 = create(:user, city: 'Seattle')
+            user_3 = create(:user, city: 'Denver')
+
+            #generates hash of 10 new packaged orders to Denver
+            p_o_den_list = create_list(:packaged_order, 10, user: user_3)
+            @p_o_den = Hash.new
+            p_o_den_list.each_with_index do |order, index|
+              @p_o_den[index+1] = order
+            end
+
+            #generates hash of 5 new packaged orders to Seattle
+            p_o_stl_list = create_list(:packaged_order, 5, user: user_2)
+            @p_o_stl = Hash.new
+            p_o_stl_list.each_with_index do |order, index|
+              @p_o_stl[index+1] = order
+            end
+
+            #5 fastest merchants(1-5) to Denver
+            @oi1 = create(:fulfilled_order_item, item: @i[1], order: @p_o_den[1], created_at: 1.days.ago)
+            @oi2 = create(:fulfilled_order_item, item: @i[2], order: @p_o_den[2], created_at: 2.days.ago)
+            @oi3 = create(:fulfilled_order_item, item: @i[3], order: @p_o_den[3], created_at: 3.days.ago)
+            @oi4 = create(:fulfilled_order_item, item: @i[4], order: @p_o_den[4], created_at: 4.days.ago)
+            @oi5 = create(:fulfilled_order_item, item: @i[5], order: @p_o_den[5], created_at: 5.days.ago)
+
+            #5 slowest merchants(6-10) to Denver
+            @oi6 = create(:fulfilled_order_item, item: @i[6], order: @p_o_den[6], created_at: 6.days.ago)
+            @oi7 = create(:fulfilled_order_item, item: @i[7], order: @p_o_den[7], created_at: 7.days.ago)
+            @oi8 = create(:fulfilled_order_item, item: @i[8], order: @p_o_den[8], created_at: 8.days.ago)
+            @oi9 = create(:fulfilled_order_item, item: @i[9], order: @p_o_den[9], created_at: 9.days.ago)
+            @oi10 = create(:fulfilled_order_item, item: @i[10], order: @p_o_den[10], created_at: 10.days.ago)
+
+            #5 fastest merchants(11-15) to Seattle
+            @oi11 = create(:fulfilled_order_item, item: @i[11], order: @p_o_stl[1], created_at: 1.days.ago)
+            @oi12 = create(:fulfilled_order_item, item: @i[12], order: @p_o_stl[2], created_at: 2.days.ago)
+            @oi13 = create(:fulfilled_order_item, item: @i[13], order: @p_o_stl[3], created_at: 3.days.ago)
+            @oi14 = create(:fulfilled_order_item, item: @i[14], order: @p_o_stl[4], created_at: 4.days.ago)
+            @oi15 = create(:fulfilled_order_item, item: @i[15], order: @p_o_stl[5], created_at: 5.days.ago)
+          end
+
+          it 'top 5 merchants who have fulfilled items the fastest to my city' do
+            allow_any_instance_of(ApplicationController).to receive(:current_user).and_return(@user_1)
+
+            visit merchants_path
+
+            within("#top-five-fast-fulfilled-city") do
+              expect(page).to have_content("#{@m[1].name}: 1 days 0 hours 0 minutes")
+              expect(page).to have_content("#{@m[2].name}: 2 days 0 hours 0 minutes")
+              expect(page).to have_content("#{@m[3].name}: 3 days 0 hours 0 minutes")
+              expect(page).to have_content("#{@m[4].name}: 4 days 0 hours 0 minutes")
+              expect(page).to have_content("#{@m[5].name}: 5 days 0 hours 0 minutes")
+
+              expect(page).to_not have_content(@m[6].name) # slower fulfillment than top 5
+              #merchants shipping to Seattle fastest
+              expect(page).to_not have_content(@m[11].name)
+              expect(page).to_not have_content(@m[12].name)
+              expect(page).to_not have_content(@m[13].name)
+              expect(page).to_not have_content(@m[14].name)
+              expect(page).to_not have_content(@m[15].name)
+            end
           end
         end
       end
