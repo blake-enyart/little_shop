@@ -182,4 +182,13 @@ class User < ApplicationRecord
         .order('completed_orders DESC, users.name ASC')
         .limit(10)
   end
+
+  def self.top_fulfilled_non_cancelled_orders_previous(limit)
+    self.joins(items: :orders)
+        .where("orders.status IN (1,2) AND EXTRACT(MONTH FROM orders.updated_at) = ?", 1.months.ago.month)
+        .select("users.*, COUNT(orders.id) AS completed_orders")
+        .group(:id)
+        .order('completed_orders DESC, users.name ASC')
+        .limit(10)
+  end
 end

@@ -495,7 +495,7 @@ RSpec.describe User, type: :model do
           #merchant 1 first with 2-10 in alphabetical order because same amount of orders fulfilled.
           @c_oi_old = Hash.new
           @c_order_old.each do |id, old_c_order|
-            @c_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements+1-(id+10)], order: @c_order_old[id])
+            @c_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements-(id+10)], order: @c_order_old[id])
             break if id == 8
           end
           @c_oi_old[9] = create(:fulfilled_order_item, item: @i[2], order: @c_order_old[9], quantity: 100)
@@ -507,9 +507,10 @@ RSpec.describe User, type: :model do
           #merchant 11 1st with 12-20 in alphabetical order because same amount of orders fulfilled in previous month
           @p_oi_old = Hash.new
           @p_order_old.each do |id, old_p_order|
-            @p_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements+1-id], order: @p_order_old[id])
+            @p_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements-id], order: @p_order_old[id])
             break if id == 8
           end
+
           @p_oi_old[9] = create(:fulfilled_order_item, item: @i[12], order: @p_order_old[9], quantity: 100)
           @p_oi_old[10] = create(:fulfilled_order_item, item: @i[11], order: @p_order_old[10], quantity: 50)
           @p_oi_old[11] = create(:fulfilled_order_item, item: @i[11], order: @p_order_old[11], quantity: 50)
@@ -521,6 +522,23 @@ RSpec.describe User, type: :model do
 
           expected_merchant_order = \
           [@m[20],@m[11],@m[12],@m[13],@m[14],@m[15],@m[16],@m[17],@m[18],@m[19]]
+
+          actual_completed_orders = []
+          actual.each do |record|
+            actual_completed_orders << record.completed_orders
+          end
+
+          expected_completed_orders = [2,1,1,1,1,1,1,1,1,1]
+
+          expect(actual).to eq(expected_merchant_order)
+          expect(actual_completed_orders).to eq(expected_completed_orders)
+        end
+
+        it '.top_fulfilled_packaged_orders_previous' do
+          actual = User.top_fulfilled_non_cancelled_orders_previous(10)
+
+          expected_merchant_order = \
+          [@m[11],@m[12],@m[13],@m[14],@m[15],@m[16],@m[17],@m[18],@m[19],@m[20]]
 
           actual_completed_orders = []
           actual.each do |record|
