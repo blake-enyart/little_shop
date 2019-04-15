@@ -90,6 +90,18 @@
         <% end %>
       </ul>
     <% end %>
+
+    <% if current_user && current_user.default? %>
+      <%= tag.section id: "top-five-fast-fulfilled-city", class: "card-body float-left m-2" do %>
+        <h5 class="card-title">Top Fulfilling Merchants in - <%= current_user.city %></h5>
+        <ul>
+          <% @top_five_fulfillment_city.each do |merchant| %>
+            <li><%= merchant.name %>: <%= time_as_words(merchant.fulfillment_time) %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    <% end %>
+
   <% end %>
 <% end %>
 

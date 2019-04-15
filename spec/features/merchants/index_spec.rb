@@ -317,85 +317,85 @@ RSpec.describe "merchant index workflow", type: :feature do
           end
 
           #generates hash with 21 items associated with corresponding merchant
-          @i = Hash.new
+          i = Hash.new
           @m.each do |id, merchant|
-            @i[id] = create(:item, merchant_id: merchant.id, inventory: 1000)
+            i[id] = create(:item, merchant_id: merchant.id, inventory: 1000)
           end
 
           #generates hash of 11 new packaged orders
           new_p_order_list = create_list(:packaged_order, 11)
-          @p_order_new = Hash.new
+          p_order_new = Hash.new
           new_p_order_list.each_with_index do |order, index|
-            @p_order_new[index+1] = order
+            p_order_new[index+1] = order
           end
 
           #generates hash of 11 packaged orders one month old
           old_p_order_list = create_list(:packaged_order, 11, updated_at: 1.months.ago)
-          @p_order_old = Hash.new
+          p_order_old = Hash.new
           old_p_order_list.each_with_index do |order, index|
-            @p_order_old[index+1] = order
+            p_order_old[index+1] = order
           end
 
           #generates hash of 11 new cancelled orders
           new_c_order_list = create_list(:cancelled_order, 11)
-          @c_order_new = Hash.new
+          c_order_new = Hash.new
           new_c_order_list.each_with_index do |order, index|
-            @c_order_new[index+1] = order
+            c_order_new[index+1] = order
           end
 
           #generates hash of 11 cancelled orders one month old
           old_c_order_list = create_list(:cancelled_order, 11, updated_at: 1.months.ago)
-          @c_order_old = Hash.new
+          c_order_old = Hash.new
           old_c_order_list.each_with_index do |order, index|
-            @c_order_old[index+1] = order
+            c_order_old[index+1] = order
           end
 
           #generates hash of 8 new order_items associated with corresponding cancelled order(1-8) and item(1-8)
           #merchant 10 fulfilled the most then 9-1 alphabetically because same amount of orders fulfilled.
           @c_oi_new = Hash.new
-          @c_order_new.each do |id, new_c_order|
-            @c_oi_new[id] = create(:fulfilled_order_item, item: @i[id], order: @c_order_new[id])
+          c_order_new.each do |id, new_c_order|
+            @c_oi_new[id] = create(:fulfilled_order_item, item: i[id], order: c_order_new[id])
             break if id == 8
           end
-          @c_oi_new[9] = create(:fulfilled_order_item, item: @i[9], order: @c_order_new[9], quantity: 100)
-          @c_oi_new[10] = create(:fulfilled_order_item, item: @i[10], order: @c_order_new[10], quantity: 50)
-          @c_oi_new[11] = create(:fulfilled_order_item, item: @i[10], order: @c_order_new[11], quantity: 50)
+          @c_oi_new[9] = create(:fulfilled_order_item, item: i[9], order: c_order_new[9], quantity: 100)
+          @c_oi_new[10] = create(:fulfilled_order_item, item: i[10], order: c_order_new[10], quantity: 50)
+          @c_oi_new[11] = create(:fulfilled_order_item, item: i[10], order: c_order_new[11], quantity: 50)
           FactoryBot.reload #reset sequence for all factories
 
           #generates hash of 8 new order_items associated with corresponding packaged order(1-8) and item(11-18)
           #merchant 20 first with 19-11 in alphabetical order because same amount of orders fulfilled.
           @p_oi_new = Hash.new
-          @p_order_new.each do |id, new_p_order|
-            @p_oi_new[id] = create(:fulfilled_order_item, item: @i[10+id], order: @p_order_new[id])
+          p_order_new.each do |id, new_p_order|
+            @p_oi_new[id] = create(:fulfilled_order_item, item: i[10+id], order: p_order_new[id])
             break if id == 8
           end
-          @p_oi_new[9] = create(:fulfilled_order_item, item: @i[19], order: @p_order_new[9], quantity: 100)
-          @p_oi_new[10] = create(:fulfilled_order_item, item: @i[20], order: @p_order_new[10], quantity: 50)
-          @p_oi_new[11] = create(:fulfilled_order_item, item: @i[20], order: @p_order_new[11], quantity: 50)
+          @p_oi_new[9] = create(:fulfilled_order_item, item: i[19], order: p_order_new[9], quantity: 100)
+          @p_oi_new[10] = create(:fulfilled_order_item, item: i[20], order: p_order_new[10], quantity: 50)
+          @p_oi_new[11] = create(:fulfilled_order_item, item: i[20], order: p_order_new[11], quantity: 50)
           FactoryBot.reload #reset sequence for all factories
 
           #generates hash of 8 old order_items associated with corresponding one month old cancelled order(1-8) and item(1-8)
           #merchant 1 first with 2-10 in alphabetical order because same amount of orders fulfilled.
           @c_oi_old = Hash.new
-          @c_order_old.each do |id, old_c_order|
-            @c_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements-(id+10)], order: @c_order_old[id])
+          c_order_old.each do |id, old_c_order|
+            @c_oi_old[id] = create(:fulfilled_order_item, item: i[number_of_elements-(id+10)], order: c_order_old[id])
             break if id == 8
           end
-          @c_oi_old[9] = create(:fulfilled_order_item, item: @i[2], order: @c_order_old[9], quantity: 100)
-          @c_oi_old[10] = create(:fulfilled_order_item, item: @i[1], order: @c_order_old[10], quantity: 50)
-          @c_oi_old[11] = create(:fulfilled_order_item, item: @i[1], order: @c_order_old[11], quantity: 50)
+          @c_oi_old[9] = create(:fulfilled_order_item, item: i[2], order: c_order_old[9], quantity: 100)
+          @c_oi_old[10] = create(:fulfilled_order_item, item: i[1], order: c_order_old[10], quantity: 50)
+          @c_oi_old[11] = create(:fulfilled_order_item, item: i[1], order: c_order_old[11], quantity: 50)
           FactoryBot.reload #reset sequence for all factories
 
           #generates hash of 8 old order_items associated with corresponding one month old packaged order(1-8) and item(11-18)
           #merchant 11 1st with 12-20 in alphabetical order because same amount of orders fulfilled in previous month
           @p_oi_old = Hash.new
-          @p_order_old.each do |id, old_p_order|
-            @p_oi_old[id] = create(:fulfilled_order_item, item: @i[number_of_elements-id], order: @p_order_old[id])
+          p_order_old.each do |id, old_p_order|
+            @p_oi_old[id] = create(:fulfilled_order_item, item: i[number_of_elements-id], order: p_order_old[id])
             break if id == 8
           end
-          @p_oi_old[9] = create(:fulfilled_order_item, item: @i[12], order: @p_order_old[9], quantity: 100)
-          @p_oi_old[10] = create(:fulfilled_order_item, item: @i[11], order: @p_order_old[10], quantity: 50)
-          @p_oi_old[11] = create(:fulfilled_order_item, item: @i[11], order: @p_order_old[11], quantity: 50)
+          @p_oi_old[9] = create(:fulfilled_order_item, item: i[12], order: p_order_old[9], quantity: 100)
+          @p_oi_old[10] = create(:fulfilled_order_item, item: i[11], order: p_order_old[10], quantity: 50)
+          @p_oi_old[11] = create(:fulfilled_order_item, item: i[11], order: p_order_old[11], quantity: 50)
           #In summary, merchants 11-20 are associated with packaged orders and merchants 1-10 are associated with cancelled orders. Merchant 21 is associated with no orders.
         end
 
@@ -452,9 +452,9 @@ RSpec.describe "merchant index workflow", type: :feature do
             end
 
             #generates hash with 'number_of_elements' items associated with corresponding merchant
-            @i = Hash.new
+            i = Hash.new
             @m.each do |id, merchant|
-              @i[id] = create(:item, merchant_id: merchant.id, inventory: 1000)
+              i[id] = create(:item, merchant_id: merchant.id, inventory: 1000)
             end
 
             @user_1 = create(:user, city: 'Denver') #user for viewing merchants page
@@ -476,25 +476,25 @@ RSpec.describe "merchant index workflow", type: :feature do
             end
 
             #5 fastest merchants(1-5) to Denver
-            @oi1 = create(:fulfilled_order_item, item: @i[1], order: @p_o_den[1], created_at: 1.days.ago)
-            @oi2 = create(:fulfilled_order_item, item: @i[2], order: @p_o_den[2], created_at: 2.days.ago)
-            @oi3 = create(:fulfilled_order_item, item: @i[3], order: @p_o_den[3], created_at: 3.days.ago)
-            @oi4 = create(:fulfilled_order_item, item: @i[4], order: @p_o_den[4], created_at: 4.days.ago)
-            @oi5 = create(:fulfilled_order_item, item: @i[5], order: @p_o_den[5], created_at: 5.days.ago)
+            @oi1 = create(:fulfilled_order_item, item: i[1], order: @p_o_den[1], created_at: 1.days.ago)
+            @oi2 = create(:fulfilled_order_item, item: i[2], order: @p_o_den[2], created_at: 2.days.ago)
+            @oi3 = create(:fulfilled_order_item, item: i[3], order: @p_o_den[3], created_at: 3.days.ago)
+            @oi4 = create(:fulfilled_order_item, item: i[4], order: @p_o_den[4], created_at: 4.days.ago)
+            @oi5 = create(:fulfilled_order_item, item: i[5], order: @p_o_den[5], created_at: 5.days.ago)
 
             #5 slowest merchants(6-10) to Denver
-            @oi6 = create(:fulfilled_order_item, item: @i[6], order: @p_o_den[6], created_at: 6.days.ago)
-            @oi7 = create(:fulfilled_order_item, item: @i[7], order: @p_o_den[7], created_at: 7.days.ago)
-            @oi8 = create(:fulfilled_order_item, item: @i[8], order: @p_o_den[8], created_at: 8.days.ago)
-            @oi9 = create(:fulfilled_order_item, item: @i[9], order: @p_o_den[9], created_at: 9.days.ago)
-            @oi10 = create(:fulfilled_order_item, item: @i[10], order: @p_o_den[10], created_at: 10.days.ago)
+            @oi6 = create(:fulfilled_order_item, item: i[6], order: @p_o_den[6], created_at: 6.days.ago)
+            @oi7 = create(:fulfilled_order_item, item: i[7], order: @p_o_den[7], created_at: 7.days.ago)
+            @oi8 = create(:fulfilled_order_item, item: i[8], order: @p_o_den[8], created_at: 8.days.ago)
+            @oi9 = create(:fulfilled_order_item, item: i[9], order: @p_o_den[9], created_at: 9.days.ago)
+            @oi10 = create(:fulfilled_order_item, item: i[10], order: @p_o_den[10], created_at: 10.days.ago)
 
             #5 fastest merchants(11-15) to Seattle
-            @oi11 = create(:fulfilled_order_item, item: @i[11], order: @p_o_stl[1], created_at: 1.days.ago)
-            @oi12 = create(:fulfilled_order_item, item: @i[12], order: @p_o_stl[2], created_at: 2.days.ago)
-            @oi13 = create(:fulfilled_order_item, item: @i[13], order: @p_o_stl[3], created_at: 3.days.ago)
-            @oi14 = create(:fulfilled_order_item, item: @i[14], order: @p_o_stl[4], created_at: 4.days.ago)
-            @oi15 = create(:fulfilled_order_item, item: @i[15], order: @p_o_stl[5], created_at: 5.days.ago)
+            @oi11 = create(:fulfilled_order_item, item: i[11], order: @p_o_stl[1], created_at: 1.days.ago)
+            @oi12 = create(:fulfilled_order_item, item: i[12], order: @p_o_stl[2], created_at: 2.days.ago)
+            @oi13 = create(:fulfilled_order_item, item: i[13], order: @p_o_stl[3], created_at: 3.days.ago)
+            @oi14 = create(:fulfilled_order_item, item: i[14], order: @p_o_stl[4], created_at: 4.days.ago)
+            @oi15 = create(:fulfilled_order_item, item: i[15], order: @p_o_stl[5], created_at: 5.days.ago)
           end
 
           it 'top 5 merchants who have fulfilled items the fastest to my city' do
@@ -503,11 +503,11 @@ RSpec.describe "merchant index workflow", type: :feature do
             visit merchants_path
 
             within("#top-five-fast-fulfilled-city") do
-              expect(page).to have_content("#{@m[1].name}: 1 days 0 hours 0 minutes")
-              expect(page).to have_content("#{@m[2].name}: 2 days 0 hours 0 minutes")
-              expect(page).to have_content("#{@m[3].name}: 3 days 0 hours 0 minutes")
-              expect(page).to have_content("#{@m[4].name}: 4 days 0 hours 0 minutes")
-              expect(page).to have_content("#{@m[5].name}: 5 days 0 hours 0 minutes")
+              expect(page).to have_content("#{@m[1].name}: 1 day 00 hours 00 minutes")
+              expect(page).to have_content("#{@m[2].name}: 2 days 00 hours 00 minutes")
+              expect(page).to have_content("#{@m[3].name}: 3 days 00 hours 00 minutes")
+              expect(page).to have_content("#{@m[4].name}: 4 days 00 hours 00 minutes")
+              expect(page).to have_content("#{@m[5].name}: 5 days 00 hours 00 minutes")
 
               expect(page).to_not have_content(@m[6].name) # slower fulfillment than top 5
               #merchants shipping to Seattle fastest

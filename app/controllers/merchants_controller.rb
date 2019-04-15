@@ -15,5 +15,8 @@ class MerchantsController < ApplicationController
     @top_ten_sellers_previous = User.top_selling_merchants_previous(10)
     @top_ten_fulfillment_current = User.top_fulfilled_non_cancelled_orders_current(10)
     @top_ten_fulfillment_previous = User.top_fulfilled_non_cancelled_orders_previous(10)
+    if current_user
+      @top_five_fulfillment_city = User.top_fulfillment_city(5, current_user)
+    end
   end
 end
