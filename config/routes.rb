@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     resources :items
     resources :item_discounts, only: [:index, :new, :create]
     patch '/item_discounts/:id/disable', to: 'item_discounts#disable', as: 'disable_item_discount'
+    patch '/item_discounts/:id/enable', to: 'item_discounts#enable', as: 'enable_item_discount'
     patch '/items/:id/enable', to: 'items#enable', as: 'enable_item'
     patch '/items/:id/disable', to: 'items#disable', as: 'disable_item'
     put '/order_items/:order_item_id/fulfill', to: 'orders#fulfill', as: 'fulfill_order_item'

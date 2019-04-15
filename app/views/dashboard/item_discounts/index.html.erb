@@ -5,6 +5,10 @@
   <p>Description: <%= item_discount.description %></p>
   <p>Order Price Threshold: <%= item_discount.order_price_threshold %></p>
   <p>Discount Amount: <%= item_discount.discount_amount%></p>
-  <%= link_to 'Disable Discount', dashboard_disable_item_discount_path(item_discount) %>
+  <% if item_discount.active %>
+  <%= link_to 'Disable Discount', dashboard_disable_item_discount_path(item_discount), method: :patch %>
+  <% else %>
+  <%= link_to 'Enable Discount', dashboard_enable_item_discount_path(item_discount), method: :patch %>
+  <% end %>
 </section>
 <% end %>

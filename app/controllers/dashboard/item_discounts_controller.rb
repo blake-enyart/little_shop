@@ -19,6 +19,22 @@ class Dashboard::ItemDiscountsController < Dashboard::BaseController
     end
   end
 
+  def disable
+    @item_discount = ItemDiscount.find(params[:id])
+    @item_discount.active = false
+    if @item_discount.save
+      redirect_to dashboard_item_discounts_path
+    end
+  end
+
+  def enable
+    @item_discount = ItemDiscount.find(params[:id])
+    @item_discount.active = true
+    if @item_discount.save
+      redirect_to dashboard_item_discounts_path
+    end
+  end
+
   private
 
   def item_discount_params
