@@ -206,4 +206,19 @@ class User < ApplicationRecord
         .order("fulfillment_time ASC")
         .limit(limit)
   end
+
+  def self.top_fulfillment_state(limit, current_user)
+    orders = User.joins(:orders)
+                 .where(state: current_user.state)
+                 .pluck('orders.id')
+
+    self.joins(items: :orders)
+        .where.not(orders: {status: :cancelled})
+        .where(order_items: {fulfilled: true})
+        .where('orders.id': orders)
+        .select('users.*, avg(order_items.updated_at - order_items.created_at) AS fulfillment_time')
+        .group(:id)
+        .order("fulfillment_time ASC")
+        .limit(limit)
+  end
 end

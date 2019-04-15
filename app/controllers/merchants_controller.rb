@@ -17,6 +17,7 @@ class MerchantsController < ApplicationController
     @top_ten_fulfillment_previous = User.top_fulfilled_non_cancelled_orders_previous(10)
     if current_user
       @top_five_fulfillment_city = User.top_fulfillment_city(5, current_user)
+      @top_five_fulfillment_state = User.top_fulfillment_state(5, current_user)
     end
   end
 end

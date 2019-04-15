@@ -100,6 +100,15 @@
           <% end %>
         </ul>
       <% end %>
+
+      <%= tag.section id: "top-five-fast-fulfilled-state", class: "card-body float-left m-2" do %>
+        <h5 class="card-title">Top Fulfilling Merchants in - <%= current_user.state %></h5>
+        <ul>
+          <% @top_five_fulfillment_state.each do |merchant| %>
+            <li><%= merchant.name %>: <%= time_as_words(merchant.fulfillment_time) %></li>
+          <% end %>
+        </ul>
+      <% end %>
     <% end %>
 
   <% end %>
