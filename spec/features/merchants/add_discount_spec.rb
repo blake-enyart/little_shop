@@ -35,7 +35,7 @@ RSpec.describe "Merchant adding an discount" do
       expect(page).to have_content("Description: #{new_description}")
       expect(page).to have_content("Order Price Threshold: #{new_order_price_threshold}")
       expect(page).to have_content("Discount Amount: #{new_discount_amount}")
-      expect(page).to have_link("Disable Discount", href: dashboard_disable_item_discount_path(new_discount))
+      expect(page).to have_link("Enable Discount", href: dashboard_enable_item_discount_path(new_discount))
     end
   end
 end
