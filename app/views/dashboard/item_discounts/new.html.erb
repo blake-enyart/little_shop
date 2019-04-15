@@ -1,0 +1,14 @@
+<%= form_for [@merchant, @discount], url: dashboard_item_discounts_path do |f| %>
+<%= f.label(:name, 'Name') %>
+<%= f.text_field(:name) %>
+
+<%= f.label(:description, 'Description') %>
+<%= f.text_field(:description) %>
+
+<%= f.label(:order_price_threshold, 'Order Price Threshold') %>
+<%= f.text_field(:order_price_threshold) %>
+
+<%= f.label(:discount_amount, 'Discount Amount') %>
+<%= f.text_field(:discount_amount) %>
+<%= f.submit('Create Discount') %>
+<% end %>

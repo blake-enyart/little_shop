@@ -1,0 +1,10 @@
+<%= link_to 'Add New Discount', new_dashboard_item_discount_path(merchant_id: session[:user_id]) %>
+<% @item_discounts.each do |item_discount| %>
+<section id= 'discount-<%= item_discount.id %>'>
+  <h3><%= item_discount.name %></h3>
+  <p>Description: <%= item_discount.description %></p>
+  <p>Order Price Threshold: <%= item_discount.order_price_threshold %></p>
+  <p>Discount Amount: <%= item_discount.discount_amount%></p>
+  <%= link_to 'Disable Discount', dashboard_disable_item_discount_path(item_discount) %>
+</section>
+<% end %>

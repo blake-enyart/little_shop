@@ -33,11 +33,13 @@
       <% end %>
       <% if current_merchant? %>
       <li class="nav-item"><%= link_to 'Dashboard', dashboard_path, class: 'nav-link' %></li>
+      <li class="nav-item"><%= link_to 'Discounts', dashboard_item_discounts_path, class: 'nav-link' %></li>
       <% end %>
 
       <% if current_admin? %>
       <li class="nav-item"><%= link_to 'Users', admin_users_path, class: 'nav-link' %></li>
       <li class="nav-item"><%= link_to 'Dashboard', admin_dashboard_path, class: 'nav-link' %></li>
+      <li class="nav-item"><%= link_to 'Discounts', dashboard_item_discounts_path, class: 'nav-link' %></li>
       <% end %>
 
       <li class="nav-item"><%= link_to 'Log out', logout_path, class: 'nav-link' %></li>
