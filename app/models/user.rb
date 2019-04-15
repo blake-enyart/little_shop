@@ -157,17 +157,16 @@ class User < ApplicationRecord
   end
 
   def self.top_selling_merchants_current(limit)
-    self.joins(items: :orders)
-        .where("orders.status = 2 AND EXTRACT(MONTH FROM orders.updated_at) = ?", Date.today.month )
-        .select("users.*, SUM(order_items.quantity) as quantity_sold")
-        .group(:id)
-        .order('quantity_sold DESC, users.name ASC')
-        .limit(limit)
+    top_selling_merchants(limit)
   end
 
   def self.top_selling_merchants_previous(limit)
+    top_selling_merchants(limit, 1.months.ago.month)
+  end
+
+  def self.top_selling_merchants(limit, date = Date.today.month)
     self.joins(items: :orders)
-        .where("orders.status = 2 AND EXTRACT(MONTH FROM orders.updated_at) = ?", 1.months.ago.month )
+        .where("orders.status = 2 AND EXTRACT(MONTH FROM orders.updated_at) = ?", date)
         .select("users.*, SUM(order_items.quantity) AS quantity_sold")
         .group(:id)
         .order('quantity_sold DESC, users.name ASC')
@@ -175,17 +174,16 @@ class User < ApplicationRecord
   end
 
   def self.top_fulfilled_non_cancelled_orders_current(limit)
-    self.joins(items: :orders)
-        .where("orders.status IN (1,2) AND EXTRACT(MONTH FROM orders.updated_at) = ?", Date.today.month)
-        .select("users.*, COUNT(orders.id) AS completed_orders")
-        .group(:id)
-        .order('completed_orders DESC, users.name ASC')
-        .limit(10)
+    top_fulfilled_non_cancelled_orders(limit)
   end
 
   def self.top_fulfilled_non_cancelled_orders_previous(limit)
+    top_fulfilled_non_cancelled_orders(limit, 1.months.ago.month)
+  end
+
+  def self.top_fulfilled_non_cancelled_orders(limit, date = Date.today.month)
     self.joins(items: :orders)
-        .where("orders.status IN (1,2) AND EXTRACT(MONTH FROM orders.updated_at) = ?", 1.months.ago.month)
+        .where("orders.status IN (1,2) AND EXTRACT(MONTH FROM orders.updated_at) = ?", date)
         .select("users.*, COUNT(orders.id) AS completed_orders")
         .group(:id)
         .order('completed_orders DESC, users.name ASC')
@@ -197,14 +195,7 @@ class User < ApplicationRecord
                  .where(city: current_user.city)
                  .pluck('orders.id')
 
-    self.joins(items: :orders)
-        .where.not(orders: {status: :cancelled})
-        .where(order_items: {fulfilled: true})
-        .where('orders.id': orders)
-        .select('users.*, avg(order_items.updated_at - order_items.created_at) AS fulfillment_time')
-        .group(:id)
-        .order("fulfillment_time ASC")
-        .limit(limit)
+    top_fulfillment(limit, orders)
   end
 
   def self.top_fulfillment_state(limit, current_user)
@@ -212,6 +203,10 @@ class User < ApplicationRecord
                  .where(state: current_user.state)
                  .pluck('orders.id')
 
+    top_fulfillment(limit, orders)
+  end
+
+  def self.top_fulfillment(limit, orders)
     self.joins(items: :orders)
         .where.not(orders: {status: :cancelled})
         .where(order_items: {fulfilled: true})
