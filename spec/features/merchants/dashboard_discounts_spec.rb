@@ -87,6 +87,20 @@ RSpec.describe 'Merchant Dashboard Discounts page' do
           expect(page).to have_link("Edit Discount")
         end
       end
+
+      it 'allows me to delete a specific discount' do
+        update_info = build(:item_discount)
+        login_as(@merchant)
+        visit dashboard_item_discounts_path
+
+        within "#discount-#{@discount.id}" do
+          click_link 'Delete Discount'
+        end
+
+        expect(current_path).to eq(dashboard_item_discounts_path)
+        expect(page).to have_content('Your discount has been deleted.')
+        expect(page).to_not have_css("#discount-#{@discount.id}")
+      end
     end
   end
 end
