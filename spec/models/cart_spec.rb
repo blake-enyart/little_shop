@@ -182,6 +182,15 @@ RSpec.describe Cart do
     end
 
     describe "#total" do
+      it "can calculate the total of all items in the cart with no discount" do
+        cart = Cart.new({"4" => 2, "5" => 1})
+        
+        actual = cart.total
+        expected = @item_4.price * 2 + @item_5.price * 1
+
+        expect(actual).to eq(expected)
+      end
+
       it "can calculate the total of all items in the cart with discount" do
         actual = @cart.total
         #discount_1 only applied on item_1
