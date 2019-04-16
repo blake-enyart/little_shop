@@ -31,7 +31,7 @@ Rails.application.routes.draw do
     get '/', to: 'dashboard#index'
 
     resources :items
-    resources :item_discounts, only: [:index, :new, :create, :edit, :update]
+    resources :item_discounts, only: [:index, :new, :create, :edit, :update, :destroy]
     patch '/item_discounts/:id/disable', to: 'item_discounts#disable', as: 'disable_item_discount'
     patch '/item_discounts/:id/enable', to: 'item_discounts#enable', as: 'enable_item_discount'
     patch '/items/:id/enable', to: 'items#enable', as: 'enable_item'
