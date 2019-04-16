@@ -23,7 +23,7 @@ RSpec.describe "Merchant adding an discount" do
     fill_in 'Description', with: new_description
     fill_in 'Order Price Threshold', with: new_order_price_threshold
     fill_in 'Discount Amount', with: new_discount_amount
-    click_button "Create Discount"
+    click_button "Submit"
 
     new_discount = ItemDiscount.last
 

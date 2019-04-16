@@ -44,4 +44,48 @@ RSpec.describe 'Merchant Dashboard Discounts page' do
       end
     end
   end
+
+  describe 'allows me to update a specific discount' do
+    before :each do
+      @discount = create(:item_discount, user: @merchant, name: 'Discount', description: 'Something witty goes here', order_price_threshold: 50, discount_amount: 5)
+    end
+
+    scenario 'when logged in as merchant' do
+      describe 'happy path' do
+        update_info = build(:item_discount)
+        login_as(@merchant)
+        visit dashboard_item_discounts_path
+
+        within "#discount-#{@discount.id}" do
+          click_link 'Edit Discount'
+        end
+
+        expect(current_path).to eq(edit_dashboard_item_discount_path(@discount))
+        expect(page.find_field(:name)).to have_content(@discount.name)
+        expect(page.find_field(:description)).to have_content(@discount.description)
+        expect(page.find_field(:order_price_threshold)).to have_content(@discount.order_price_threshold)
+        expect(page.find_field(:discount_amount)).to have_content(@discount.discount_amount)
+
+        fill_in 'Name', with: update_info.name
+        fill_in 'Description', with: update_info.description
+        fill_in 'Order Price Threshold', with: update_info.order_price_threshold
+        fill_in 'Discount Amount', with: update_info.discount_amount
+        click_button "Submit"
+
+        expect(current_path).to eq(dashboard_item_discounts_path)
+        @discount.reload #update discount details
+        
+        expect(page).to have_content("#{@discount.name} is now updated!")
+
+        within "#discount-#{@discount.id}" do
+          expect(page).to have_content(@discount.name)
+          expect(page).to have_content("Description: #{@discount.description}")
+          expect(page).to have_content("Order Price Threshold: #{@discount.order_price_threshold}")
+          expect(page).to have_content("Discount Amount: #{@discount.discount_amount}")
+          expect(page).to have_link("Enable Discount", href: dashboard_enable_item_discount_path(new_discount))
+          expect(page).to have_link("Edit Discount")
+        end
+      end
+    end
+  end
 end
