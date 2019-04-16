@@ -204,8 +204,8 @@ RSpec.describe "Cart show page" do
           @item_2 = create(:item, user: @merchant_1, inventory: 1000, price: 50)
           @item_3 = create(:item, user: @merchant_2, inventory: 1000, price: 75)
           @item_4 = create(:item, user: @merchant_2, inventory: 1000, price: 100)
-          #discount takes $10 off once $50 threshold is attained for merchant_1
-          @discount = create(:item_discount, user: @merchant_1, order_price_threshold: 50, discount_amount: 10)
+          #discount takes $10 off order and item subtotal once $50 threshold is attained for merchant_1
+          @discount_1 = create(:item_discount, user: @merchant_1, order_price_threshold: 50, discount_amount: 10)
         end
 
         scenario "as a regular user" do
@@ -249,6 +249,17 @@ RSpec.describe "Cart show page" do
             expect(page).to_not have_content("subtotal: $80.00")
             expect(page).to_not have_content("subtotal: $100.00")
           end
+
+          visit item_path(@item_3)
+          click_on "Add to Cart"
+
+          visit cart_path
+
+          within("#item-#{@item_3.id}") do
+            expect(page).to have_content("subtotal: $75.00")
+          end
+
+          expect(page).to have_content("Total: $165.00")
         end
       end
     end
