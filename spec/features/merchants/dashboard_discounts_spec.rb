@@ -48,44 +48,44 @@ RSpec.describe 'Merchant Dashboard Discounts page' do
   context 'when logged in as merchant' do
     describe 'happy path' do
       before :each do
-        @discount = create(:item_discount, user: @merchant, name: 'Discount', description: 'Something witty goes here', order_price_threshold: 50, discount_amount: 5)
+        @discount = create(:inactive_item_discount, user: @merchant, name: 'Discount', description: 'Something witty goes here', order_price_threshold: 50, discount_amount: 5)
       end
 
       it 'allows me to update a specific discount' do
 
-      update_info = build(:item_discount)
-      login_as(@merchant)
-      visit dashboard_item_discounts_path
+        update_info = build(:item_discount)
+        login_as(@merchant)
+        visit dashboard_item_discounts_path
 
-      within "#discount-#{@discount.id}" do
-        click_link 'Edit Discount'
-      end
+        within "#discount-#{@discount.id}" do
+          click_link 'Edit Discount'
+        end
 
-      expect(current_path).to eq(edit_dashboard_item_discount_path(@discount))
-      expect(page.find_field(:name)).to have_content(@discount.name)
-      expect(page.find_field(:description)).to have_content(@discount.description)
-      expect(page.find_field(:order_price_threshold)).to have_content(@discount.order_price_threshold)
-      expect(page.find_field(:discount_amount)).to have_content(@discount.discount_amount)
+        expect(current_path).to eq(edit_dashboard_item_discount_path(@discount))
 
-      fill_in 'Name', with: update_info.name
-      fill_in 'Description', with: update_info.description
-      fill_in 'Order Price Threshold', with: update_info.order_price_threshold
-      fill_in 'Discount Amount', with: update_info.discount_amount
-      click_button "Submit"
+        expect(find_field('Name').value).to have_content(@discount.name)
+        expect(find_field('Description').value).to have_content(@discount.description)
+        expect(find_field('Order Price Threshold').value).to have_content(@discount.order_price_threshold)
+        expect(find_field('Discount Amount').value).to have_content(@discount.discount_amount)
 
-      expect(current_path).to eq(dashboard_item_discounts_path)
-      @discount.reload #update discount details
+        fill_in 'Name', with: update_info.name
+        fill_in 'Description', with: update_info.description
+        fill_in 'Order Price Threshold', with: update_info.order_price_threshold
+        fill_in 'Discount Amount', with: update_info.discount_amount
+        click_button "Submit"
 
-      expect(page).to have_content("#{@discount.name} is now updated!")
+        expect(current_path).to eq(dashboard_item_discounts_path)
 
-      within "#discount-#{@discount.id}" do
-        expect(page).to have_content(@discount.name)
-        expect(page).to have_content("Description: #{@discount.description}")
-        expect(page).to have_content("Order Price Threshold: #{@discount.order_price_threshold}")
-        expect(page).to have_content("Discount Amount: #{@discount.discount_amount}")
-        expect(page).to have_link("Enable Discount", href: dashboard_enable_item_discount_path(new_discount))
-        expect(page).to have_link("Edit Discount")
-      end
+        expect(page).to have_content("#{update_info.name} is now updated!")
+
+        within "#discount-#{@discount.id}" do
+          expect(page).to have_content(update_info.name)
+          expect(page).to have_content("Description: #{update_info.description}")
+          expect(page).to have_content("Order Price Threshold: #{update_info.order_price_threshold}")
+          expect(page).to have_content("Discount Amount: #{update_info.discount_amount}")
+          expect(page).to have_link("Enable Discount", href: dashboard_enable_item_discount_path(@discount))
+          expect(page).to have_link("Edit Discount")
+        end
       end
     end
   end

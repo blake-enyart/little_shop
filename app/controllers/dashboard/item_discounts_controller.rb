@@ -5,13 +5,13 @@ class Dashboard::ItemDiscountsController < Dashboard::BaseController
 
   def new
     @merchant = User.find(params[:merchant_id])
-    @discount = @merchant.item_discounts.new
+    @item_discount = @merchant.item_discounts.new
   end
 
   def create
     @merchant = current_user if current_merchant?
-    @discount = @merchant.item_discounts.new(item_discount_params)
-    if @discount.save
+    @item_discount = @merchant.item_discounts.new(item_discount_params)
+    if @item_discount.save
       flash[:alert] = "Your discount has been saved!"
       redirect_to dashboard_item_discounts_path
     else
@@ -32,6 +32,22 @@ class Dashboard::ItemDiscountsController < Dashboard::BaseController
     @item_discount.active = true
     if @item_discount.save
       redirect_to dashboard_item_discounts_path
+    end
+  end
+
+  def edit
+    @merchant = current_user if current_merchant?
+    @item_discount = ItemDiscount.find(params[:id])
+  end
+
+  def update
+    @item_discount = ItemDiscount.find(params[:id])
+    if @item_discount.update(item_discount_params)
+      flash[:alert] = "#{@item_discount.name} is now updated!"
+      redirect_to dashboard_item_discounts_path
+    else
+      flash[:danger] = @item_discount.errors.full_messages
+      render :edit
     end
   end
 

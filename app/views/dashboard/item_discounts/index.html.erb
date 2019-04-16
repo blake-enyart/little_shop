@@ -10,5 +10,6 @@
   <% else %>
   <%= link_to 'Enable Discount', dashboard_enable_item_discount_path(item_discount), method: :patch %>
   <% end %>
+  <%= link_to 'Edit Discount', edit_dashboard_item_discount_path(item_discount) %>
 </section>
 <% end %>
