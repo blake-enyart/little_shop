@@ -36,11 +36,46 @@ class Cart
 
   def total
     items.sum do |item, quantity|
-      item.price * quantity
+      if item.user.item_discounts.count == 0
+        item.price * quantity
+      else
+        subtotal(item)
+      end
     end
   end
 
   def subtotal(item)
-    count_of(item.id) * item.price
+    merchant_discounts = find_all_discounts(@cart)[item.user]
+    if merchant_discounts
+      determine_discount_use(item, merchant_discounts)
+    else #no discounts available from merchant
+      count_of(item.id) * item.price
+    end
+  end
+
+  def find_all_discounts(cart)
+    items().keys.inject({}) do |hash, item|
+      if item.user.item_discounts.count > 0
+        hash[item.user] = item.user.item_discounts
+      end
+      hash
+    end
+  end
+
+  def determine_discount_use(item, merchant_discounts)
+    full_price = count_of(item.id) * item.price
+    selected_discounts = merchant_discounts.select do |discount|
+      discount.order_price_threshold <= full_price && discount.active
+    end
+    if selected_discounts.count > 0
+      choose_best_discount(item, full_price, selected_discounts)
+    else
+      full_price
+    end
+  end
+
+  def choose_best_discount(item, full_price, selected_discounts)
+    discount = selected_discounts.max_by{ |discount| discount.discount_amount }
+    full_price - discount.discount_amount
   end
 end

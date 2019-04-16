@@ -188,7 +188,7 @@ RSpec.describe Cart do
         expected = ((@item_1.price * 2) - 10) + @item_2.price * 1 + @item_4.price * 2 \
         + @item_5.price * 1
 
-        expect(actual).to_not eq(expected)
+        expect(actual).to eq(expected)
       end
 
       it "can calculate the total of all items in the cart with multiple discounts available" do
@@ -198,11 +198,8 @@ RSpec.describe Cart do
         #discount_2 only applied on item_1
         expected = ((@item_1.price * 2) - 30) + @item_2.price * 1 + @item_4.price * 2 \
         + @item_5.price * 1
-        unexpected = @item_1.price * 2 + @item_2.price * 1 + @item_4.price * 2 \
-        + @item_5.price * 1
 
         expect(actual).to eq(expected)
-        expect(actual).to_not eq(unexpected)
 
         discount_3 = create(:item_discount, user: @merchant_2, order_price_threshold: 50, discount_amount: 10)
 
